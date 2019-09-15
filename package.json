@@ -1,0 +1,12 @@
+{
+  "name": "weather_app",
+  "version": "1.0.0",
+  "description": "Showing current weather in your current location or in the chosen city.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "saltowl",
+  "license": "ISC"
+}
