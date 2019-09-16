@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    "lasso-sass",
+    "lasso-marko"
+  ],
+  "require": {
+    "transforms": [
+      {
+        "transform": "lasso-babel-transform"
+      }
+    ]
+  }
+}
