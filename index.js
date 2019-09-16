@@ -1,3 +1,3 @@
-import weather from './components/weather.marko';
+import weather from "./components/weather.marko";
 
 weather.renderSync({}).appendTo(document.body);

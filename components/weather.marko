@@ -1,13 +1,32 @@
 import axios from 'axios';
 import cities from '../data/processed_city.list';
+import * as cnsts from '../data/constants';
 
 class {
+    onCreate() {
+        this.state = cnsts.INITIAL_STATE;
+
+        this.fillState = (data) => {
+            this.state.main = data.weather[0].main;
+            this.state.pressure = data.main.pressure + ' hPa';
+            this.state.temp = data.main.temp + ' C';
+            this.state.humidity = data.main.humidity + '%';
+            this.state.sunrise = new Date(data.sys.sunrise * 1000);
+            this.state.sunset = new Date(data.sys.sunset * 1000);
+            this.state.icon = data.weather[0].icon;
+            this.state.wind_deg = data.wind.deg + 'deg';
+            this.state.wind_speed = data.wind.speed + ' mps';
+            this.state.description = data.description;
+            this.state.status = cnsts.STATUS.DISPLAY;
+        }
+    }
     getData() {
         const cityInfo = document.getElementById('city').value.replace(', ', ',');
         axios
             .get('http://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
             .then(response => {
                 console.log(response.data);
+                this.fillState(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -15,7 +34,7 @@ class {
     }
 }
 
-<div>
+<div id="control">
   <input list="cities" name="city" id="city">
   <datalist id="cities">
     <for|city| of=cities>
@@ -24,3 +43,23 @@ class {
   </datalist>
   <button on-click('getData')>Show</button>
 </div>
+
+style.scss {
+}
+
+<if (state.status === cnsts.STATUS.DISPLAY)>
+    <div id="weather">
+        <div>${state.main}</div>
+        <img src="http://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
+        <div>Temperature: ${state.temp}</div>
+        <div>Humidity: ${state.humidity}</div>
+        <div>
+            $ const rot = ": rotate(" + state.wind_deg + ");";
+            <div id="windDirection" style="-webkit-transform"+rot+"-ms-transform"+rot+"-o-transform"+rot+"transform"+rot>↑</div>
+            <div>${state.wind_speed}</div>
+        </div>
+        <div>${state.pressure}</div>
+        <div>Sunrise: ${state.sunrise}</div>
+        <div>Sunset: ${state.sunset}</div>
+    </div>
+</if>
