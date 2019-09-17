@@ -1,0 +1,239 @@
+body {
+  margin: 0;
+}
+
+#app {
+  background: #83ADA5;
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+#control > .column > .row {
+  margin: 20px;
+}
+
+#city {
+  width: 300px;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 2px #86A79E inset;
+}
+
+#temperature {
+  font-size: 25pt;
+  font-weight: bold;
+}
+
+#main-img {
+  max-width: 100%;
+  display: block;
+  height: auto;
+}
+
+#weather {
+  margin: 20px;
+  border: 5px #B4D7D0 groove;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+#main {
+  font-size: 20pt;
+  font-weight: bold;
+}
+
+#wind {
+  height: 70px;
+  width: 70px;
+  border: 5px #B4D7D0 outset;
+  border-radius: 50%;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas: ". N ." "W windDirection E" ". S .";
+}
+
+#wind > div {
+  align-self: center;
+  justify-self: center;
+  font-size: 15px;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+#N {
+  grid-area: N;
+}
+
+#W {
+  grid-area: W;
+}
+
+#windDirection {
+  grid-area: windDirection;
+}
+
+#E {
+  grid-area: E;
+}
+
+#S {
+  grid-area: S;
+}
+
+i, #barometer {
+  font-size: 25pt;
+  height: 25pt;
+}
+
+#windDirection {
+  width: 25pt;
+  height: 25pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#windDirection > div {
+  height: 70%;
+}
+
+#wind-speed, #addit-info {
+  font-size: 20pt;
+}
+
+#addit-info, #daylight-hours {
+  margin: 20px 0;
+}
+
+#daylight-hours {
+  font-size: 18pt;
+  line-height: 40px;
+}
+
+button {
+  background: transparent;
+  color: black;
+  border: 2px #86A79E outset;
+  border-radius: 8px;
+  margin-left: 10px !important;
+  padding: 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+button:active, code {
+  border: 2px #86A79E inset;
+}
+
+code {
+  background: #B4D7D0;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+@media screen and (max-width: 460px) {
+  #city {
+    width: 160px;
+    font-size: 14px;
+  }
+
+  #temperature {
+    font-size: 18pt;
+  }
+
+  #main {
+    font-size: 14pt;
+  }
+
+  i, #barometer {
+    font-size: 18pt;
+    height: 18pt;
+  }
+
+  #windDirection {
+    width: 18pt;
+    height: 18pt;
+  }
+
+  #wind-speed, #addit-info {
+    font-size: 14pt;
+  }
+
+  #daylight-hours {
+    font-size: 12pt;
+  }
+
+  button {
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 306px) {
+  #city {
+    width: 100px;
+    font-size: 12px;
+  }
+
+  #temperature {
+    font-size: 14pt;
+  }
+
+  #main {
+    font-size: 10pt;
+  }
+
+  i, #barometer {
+    font-size: 14pt;
+    height: 14pt;
+  }
+
+  #windDirection {
+    width: 14pt;
+    height: 14pt;
+  }
+
+  #wind-speed, #addit-info {
+    font-size: 10pt;
+  }
+
+  #daylight-hours {
+    font-size: 8pt;
+  }
+
+  button {
+    font-size: 12px;
+  }
+}
+
+/*# sourceMappingURL=index.css.map */
