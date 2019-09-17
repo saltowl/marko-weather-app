@@ -14,5 +14,6 @@ export const INITIAL_STATE = {
     main: '',
     wind_deg: "0deg",
     wind_speed: 0,
-    description: ''
+    description: '',
+    message: ''
 };

@@ -1,3 +1,3 @@
-import weather from "./components/weather.marko";
+import app from "./app.marko";
 
-weather.renderSync({}).appendTo(document.body);
+app.renderSync({}).appendTo(document.body);

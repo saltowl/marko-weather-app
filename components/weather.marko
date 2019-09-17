@@ -6,60 +6,101 @@ class {
     onCreate() {
         this.state = cnsts.INITIAL_STATE;
 
-        this.fillState = (data) => {
-            this.state.main = data.weather[0].main;
-            this.state.pressure = data.main.pressure + ' hPa';
-            this.state.temp = data.main.temp + ' C';
-            this.state.humidity = data.main.humidity + '%';
-            this.state.sunrise = new Date(data.sys.sunrise * 1000);
-            this.state.sunset = new Date(data.sys.sunset * 1000);
-            this.state.icon = data.weather[0].icon;
-            this.state.wind_deg = data.wind.deg + 'deg';
-            this.state.wind_speed = data.wind.speed + ' mps';
-            this.state.description = data.description;
-            this.state.status = cnsts.STATUS.DISPLAY;
-        }
+        this.fillState = this.fillState.bind(this);
+        this.showMessage = this.showMessage.bind(this);
+        this.resetMessage = this.resetMessage.bind(this);
+    }
+    fillState(data) {
+        this.state.main = data.weather[0].main;
+        this.state.pressure = (data.main.pressure * 0.75006375541921).toFixed(0) + ' mmHg';
+        this.state.temp = (data.main.temp < 0 ? "" : "+") + (data.main.temp).toFixed(1) + ' °C';
+        this.state.humidity = data.main.humidity + '%';
+        this.state.sunrise = this.processTimeString(data.sys.sunrise);
+        this.state.sunset = this.processTimeString(data.sys.sunset);
+        this.state.icon = data.weather[0].icon;
+        this.state.wind_deg = data.wind.deg + 'deg';
+        this.state.wind_speed = data.wind.speed + ' m/s';
+        this.state.description = data.weather[0].description;
+        this.state.status = cnsts.STATUS.DISPLAY;
+    }
+    processTimeString(date) {
+        return new Date(date * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
     getData() {
         const cityInfo = document.getElementById('city').value.replace(', ', ',');
-        axios
-            .get('http://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
-            .then(response => {
-                console.log(response.data);
-                this.fillState(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        if (cityInfo !== '') {
+            this.resetMessage();
+            axios
+                .get('http://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
+                .then(response => {
+                    console.log(response.data);
+                    this.fillState(response.data);
+                })
+                .catch(error => {
+                    console.log(error);
+                    if (error.response.status === 404) {
+                        this.showMessage("City isn't found");
+                    }
+                });
+        } else {
+            this.showMessage("Enter the name of the city");
+        }
+    }
+    showMessage(message) {
+        this.state.message = message;
+    }
+    resetMessage() {
+        this.state.message = '';
     }
 }
 
-<div id="control">
-  <input list="cities" name="city" id="city">
-  <datalist id="cities">
-    <for|city| of=cities>
-        <option>${city.name + ', ' + city.country}</option>
-    </for>
-  </datalist>
-  <button on-click('getData')>Show</button>
-</div>
 
-style.scss {
-}
-
-<if (state.status === cnsts.STATUS.DISPLAY)>
-    <div id="weather">
-        <div>${state.main}</div>
-        <img src="http://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
-        <div>Temperature: ${state.temp}</div>
-        <div>Humidity: ${state.humidity}</div>
-        <div>
-            $ const rot = ": rotate(" + state.wind_deg + ");";
-            <div id="windDirection" style="-webkit-transform"+rot+"-ms-transform"+rot+"-o-transform"+rot+"transform"+rot>↑</div>
-            <div>${state.wind_speed}</div>
+<div>
+    <div#control>
+        <div.column>
+            <div.row>
+                <input#city list="cities" name="city" required title="This field shouldn't be empty"/>
+                <datalist#cities>
+                    <for|city| of=cities>
+                        <option>${city.name + ', ' + city.country}</option>
+                    </for>
+                </datalist>
+                <button on-click('getData')>Show</button>
+            </div>
+            <if (state.message !== '')>
+                <div#message><i.fal.fa-info></i> ${state.message}</div>
+            </if>
         </div>
-        <div>${state.pressure}</div>
-        <div>Sunrise: ${state.sunrise}</div>
-        <div>Sunset: ${state.sunset}</div>
     </div>
-</if>
+
+    <if (state.status === cnsts.STATUS.DISPLAY)>
+        <div#weather>
+            <div#main>${state.main}</div>
+            <div.row.space-between>
+                <div.row><i.fas.fa-thermometer-half></i> ${state.temp}</div>
+                <img src="http://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
+            </div>
+            <div#windBlock.row.space-between>
+                <div.row>
+                    <i.fas.fa-wind></i>
+                    <div>${state.wind_speed}</div>
+                </div>
+                $ const rot = ": rotate(" + state.wind_deg + ");";
+                <div#wind>
+                    <div#N>N</div>
+                    <div#W>W</div>
+                    <div#windDirection><div style="-webkit-transform"+rot+"-ms-transform"+rot+"-o-transform"+rot+"transform"+rot>↑</div></div>
+                    <div#E>E</div>
+                    <div#S>S</div>
+                </div>
+            </div>
+            <div.row.space-between>
+                <div.row><i.fas.fa-tint></i> ${state.humidity}</div>
+                <div.row><img#barometer src="https://image.flaticon.com/icons/svg/106/106462.svg"/>${state.pressure}</div>
+            </div>
+            <div.row>
+                <div>Daylight hours: from ${state.sunrise} to ${state.sunset}</div>
+            </div>
+        </div>
+    </if>
+</div>

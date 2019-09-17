@@ -1,3 +1,80 @@
+$icon-size: 25pt;
+
+@mixin all_center () {
+  align-items: center;
+  justify-content: center;
+}
+
+
+#app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  @include all_center();
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  @include all_center();
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+#weather {
+  margin: 20px;
+}
+
+#main {
+  text-align: center;
+}
+
+#wind {
+  display: grid;
+  border: 1px solid red;
+  border-radius: 50%;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas:
+          ". N ."
+          "W windDirection E"
+          ". S .";
+}
+
+#wind > div {
+  align-self: center;
+  justify-self: center;
+  font-size: 10px;
+}
+
+$compass-items: N, W, windDirection, E, S;
+
+@each $item in $compass-items {
+  ##{$item} {
+    grid-area: $item;
+  }
+}
+
+i, #barometer {
+  font-size: $icon-size;
+  height: $icon-size;
+}
+
 #windDirection {
-  width: 20px;
+  width: $icon-size;
+  height: $icon-size;
+  display: flex;
+  @include all_center();
+}
+
+#windDirection > div {
+  height: 70%;
 }
