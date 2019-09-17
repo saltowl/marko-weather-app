@@ -1,16 +1,25 @@
 $icon-size: 25pt;
+$font: 20pt;
+$radius: 8px;
+$control-font: 18px;
+$input-width: 300px;
 
 @mixin all_center () {
   align-items: center;
   justify-content: center;
 }
 
+body {
+  margin: 0;
+}
 
 #app {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background: #83ADA5;
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+  font-family: sans-serif;
+  text-align: center;
 }
 
 .row {
@@ -29,18 +38,47 @@ $icon-size: 25pt;
   justify-content: space-between;
 }
 
-#weather {
+#control>.column>.row {
   margin: 20px;
 }
 
+#city {
+  width: $input-width;
+  font-size: $control-font;
+  padding: $radius;
+  border-radius: $radius;
+  border: 2px #86A79E inset;
+}
+
+#temperature {
+  font-size: $icon-size;
+  font-weight: bold;
+}
+
+#main-img {
+  max-width: 100%;
+  display: block;
+  height: auto;
+}
+
+#weather {
+  margin: 20px;
+  border: 5px #B4D7D0 groove;
+  padding: 10px;
+  border-radius: 8px;
+}
+
 #main {
-  text-align: center;
+  font-size: $font;
+  font-weight: bold;
 }
 
 #wind {
-  display: grid;
-  border: 1px solid red;
+  height: 70px;
+  width: 70px;
+  border: 5px #B4D7D0 outset;
   border-radius: 50%;
+  display: grid;
   grid-template-rows: 1fr 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas:
@@ -52,7 +90,9 @@ $icon-size: 25pt;
 #wind > div {
   align-self: center;
   justify-self: center;
-  font-size: 10px;
+  font-size: 15px;
+  font-family: monospace;
+  font-weight: bold;
 }
 
 $compass-items: N, W, windDirection, E, S;
@@ -77,4 +117,133 @@ i, #barometer {
 
 #windDirection > div {
   height: 70%;
+}
+
+#wind-speed, #addit-info {
+  font-size: $font;
+}
+
+#addit-info, #daylight-hours {
+  margin: 20px 0;
+}
+
+#daylight-hours {
+  font-size: $font - 2;
+  line-height: 40px;
+}
+
+button {
+  background: transparent;
+  color: black;
+  border: 2px #86A79E outset;
+  border-radius: $radius;
+  margin-left: 10px !important;
+  padding: $radius;
+  font-size: $control-font;
+  font-weight: bold;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+button:active, code {
+  border: 2px #86A79E inset;
+}
+
+code {
+  background: #B4D7D0;
+  border-radius: $radius;
+  padding: 2px;
+}
+
+@media screen and (max-width: 460px) {
+  $icon-size: 18pt;
+  $font: 14pt;
+  $control-font: 14px;
+  $input-width: 160px;
+
+
+  #city {
+    width: $input-width;
+    font-size: $control-font;
+  }
+
+  #temperature {
+    font-size: $icon-size;
+  }
+
+  #main {
+    font-size: $font;
+  }
+
+  i, #barometer {
+    font-size: $icon-size;
+    height: $icon-size;
+  }
+
+  #windDirection {
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  #wind-speed, #addit-info {
+    font-size: $font;
+  }
+
+  #daylight-hours {
+    font-size: $font - 2;
+  }
+
+  button {
+    font-size: $control-font;
+  }
+}
+
+@media screen and (max-width: 306px) {
+  $icon-size: 14pt;
+  $font: 10pt;
+  $control-font: 12px;
+  $input-width: 100px;
+
+
+  #city {
+    width: $input-width;
+    font-size: $control-font;
+  }
+
+  #temperature {
+    font-size: $icon-size;
+  }
+
+  #main {
+    font-size: $font;
+  }
+
+  i, #barometer {
+    font-size: $icon-size;
+    height: $icon-size;
+  }
+
+  #windDirection {
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  #wind-speed, #addit-info {
+    font-size: $font;
+  }
+
+  #daylight-hours {
+    font-size: $font - 2;
+  }
+
+  button {
+    font-size: $control-font;
+  }
 }

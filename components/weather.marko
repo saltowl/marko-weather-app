@@ -20,7 +20,7 @@ class {
         this.state.icon = data.weather[0].icon;
         this.state.wind_deg = data.wind.deg + 'deg';
         this.state.wind_speed = data.wind.speed + ' m/s';
-        this.state.description = data.weather[0].description;
+        this.state.description = data.weather[0].description[0].toUpperCase() + data.weather[0].description.substr(1);
         this.state.status = cnsts.STATUS.DISPLAY;
     }
     processTimeString(date) {
@@ -77,12 +77,12 @@ class {
         <div#weather>
             <div#main>${state.main}</div>
             <div.row.space-between>
-                <div.row><i.fas.fa-thermometer-half></i> ${state.temp}</div>
-                <img src="http://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
+                <div.row#temperature><i.fas.fa-thermometer-half></i>&nbsp;${state.temp}</div>
+                <img#main-img src="http://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
             </div>
             <div#windBlock.row.space-between>
-                <div.row>
-                    <i.fas.fa-wind></i>
+                <div#wind-speed.row>
+                    <i.fas.fa-wind></i>&nbsp;
                     <div>${state.wind_speed}</div>
                 </div>
                 $ const rot = ": rotate(" + state.wind_deg + ");";
@@ -94,12 +94,12 @@ class {
                     <div#S>S</div>
                 </div>
             </div>
-            <div.row.space-between>
-                <div.row><i.fas.fa-tint></i> ${state.humidity}</div>
-                <div.row><img#barometer src="https://image.flaticon.com/icons/svg/106/106462.svg"/>${state.pressure}</div>
+            <div#addit-info.row.space-between>
+                <div.row><img#barometer src="https://image.flaticon.com/icons/svg/106/106462.svg"/>&nbsp;${state.pressure}</div>
+                <div.row><i.fas.fa-tint></i>&nbsp;${state.humidity}</div>
             </div>
-            <div.row>
-                <div>Daylight hours: from ${state.sunrise} to ${state.sunset}</div>
+            <div.row#daylight-hours>
+                <div>Daylight hours: from <code>${state.sunrise}</code> to <code>${state.sunset}</code></div>
             </div>
         </div>
     </if>
