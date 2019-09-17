@@ -31,7 +31,7 @@ class {
         if (cityInfo !== '') {
             this.resetMessage();
             axios
-                .get('http://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
+                .get('https://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
                 .then(response => {
                     console.log(response.data);
                     this.fillState(response.data);
@@ -78,7 +78,7 @@ class {
             <div#main>${state.main}</div>
             <div.row.space-between>
                 <div.row#temperature><i.fas.fa-thermometer-half></i>&nbsp;${state.temp}</div>
-                <img#main-img src="http://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
+                <img#main-img src="https://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
             </div>
             <div#windBlock.row.space-between>
                 <div#wind-speed.row>

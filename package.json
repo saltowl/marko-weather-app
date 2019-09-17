@@ -17,9 +17,7 @@
     "lasso-babel-transform": "^3.0.0",
     "lasso-marko": "^2.4.7",
     "lasso-sass": "^3.0.0",
-    "sass": "^1.22.12"
-  },
-  "devDependencies": {
+    "sass": "^1.22.12",
     "@fortawesome/fontawesome-free": "^5.10.2"
   }
 }
