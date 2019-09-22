@@ -59,13 +59,7 @@ class {
 <div>
     <div#control>
         <div.column>
-            <div.row>
-                <input#city list="cities" name="city" required title="This field shouldn't be empty"/>
-                <datalist#cities>
-                    <for|city| of=cities>
-                        <option>${city.name + ', ' + city.country}</option>
-                    </for>
-                </datalist>
+            <div.row no-update>
                 <button on-click('getData')>Show</button>
             </div>
             <if (state.message !== '')>
