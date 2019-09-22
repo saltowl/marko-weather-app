@@ -17,3 +17,5 @@ export const INITIAL_STATE = {
     description: '',
     message: ''
 };
+
+export const MAX_DISPLAYED_CITIES = 10;

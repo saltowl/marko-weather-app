@@ -3,13 +3,36 @@ import cities from '../data/processed_city.list';
 import * as cnsts from '../data/constants';
 import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
 
+static function closeAllLists(el) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    const inp = document.getElementById('city');
+    const items = document.getElementsByClassName("autocomplete-items");
+    for (let i = 0; i < items.length; i++) {
+        if (el != items[i] && el != inp) {
+          items[i].parentNode.removeChild(items[i]);
+        }
+    }
+}
+
 class {
     onCreate() {
         this.state = cnsts.INITIAL_STATE;
+        this.currentFocus = -1;
 
         this.fillState = this.fillState.bind(this);
         this.showMessage = this.showMessage.bind(this);
         this.resetMessage = this.resetMessage.bind(this);
+
+        this.handleInput = this.handleInput.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.addActive = this.addActive.bind(this);
+        this.removeActive = this.removeActive.bind(this);
+    }
+    onMount() {
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
     }
     fillState(data) {
         this.state.main = data.weather[0].main;
@@ -30,7 +53,9 @@ class {
     getData() {
         const cityInfo = document.getElementById('city').value.replace(', ', ',');
         if (cityInfo !== '') {
-            this.resetMessage();
+            if (this.state.message !== '') {
+                this.resetMessage();
+            }
             axios
                 .get('https://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
                 .then(response => {
@@ -53,6 +78,95 @@ class {
     resetMessage() {
         this.state.message = '';
     }
+    handleInput(e) {
+        const inp = document.getElementById('city');
+        const val = inp.value;
+
+        closeAllLists();
+        if (!val) {
+            return false;
+        }
+
+        this.currentFocus = -1;
+        /*create a DIV element that will contain the items (values):*/
+        let a = document.createElement("DIV");
+        a.setAttribute("id", "city_autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        /*append the DIV element as a child of the autocomplete container:*/
+        inp.parentNode.appendChild(a);
+        const citiesCount = Math.min(cities.length, cnsts.MAX_DISPLAYED_CITIES);
+        let fittedCount = 0;
+        for (let i = 0; i < cities.length; i++) {
+            /*check if the item starts with the same letters as the text field value:*/
+            let countryStr = cities[i].name + ', ' + cities[i].country;
+            if (countryStr.substr(0, val.length) == val) {
+                /*create a DIV element for each matching element:*/
+                let b = document.createElement("DIV");
+                /*make the matching letters bold:*/
+                b.innerHTML = "<strong>" + countryStr.substr(0, val.length) + "</strong>";
+                b.innerHTML += countryStr.substr(val.length);
+                /*insert a input field that will hold the current array item's value:*/
+                b.innerHTML += "<input type='hidden' value='" + countryStr + "'>";
+                /*execute a function when someone clicks on the item value (DIV element):*/
+                b.addEventListener("click", function(e) {
+                    /*insert the value for the autocomplete text field:*/
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    closeAllLists();
+                });
+                a.appendChild(b);
+                fittedCount++;
+            }
+            if (fittedCount > citiesCount) {
+                break;
+            }
+        }
+    }
+    handleKeyDown(e) {
+        let el = document.getElementById("city_autocomplete-list");
+        if (el) {
+            el = el.getElementsByTagName("div");
+        }
+        if (e.keyCode == 40) {
+            /*If the arrow DOWN key is pressed,
+            increase the currentFocus variable:*/
+            this.currentFocus++;
+            this.addActive(el);
+        } else if (e.keyCode == 38) {
+            /*If the arrow UP key is pressed,
+            decrease the currentFocus variable:*/
+            this.currentFocus--;
+            this.addActive(el);
+        } else if (e.keyCode == 13) {
+            /*If the ENTER key is pressed, prevent the form from being submitted,*/
+            e.preventDefault();
+            if (this.currentFocus > -1) {
+                /*and simulate a click on the "active" item:*/
+                if (el) {
+                    el[this.currentFocus].click();
+                }
+            }
+        }
+    }
+    addActive(el) {
+        if (!el) {
+            return false;
+        }
+
+        this.removeActive(el);
+        if (this.currentFocus >= el.length) {
+            this.currentFocus = 0;
+        }
+        if (this.currentFocus < 0) {
+            this.currentFocus = (el.length - 1);
+        }
+
+        el[this.currentFocus].classList.add("autocomplete-active");
+    }
+    removeActive(el) {
+        for (var i = 0; i < el.length; i++) {
+          el[i].classList.remove("autocomplete-active");
+        }
+     }
 }
 
 
@@ -60,10 +174,16 @@ class {
     <div#control>
         <div.column>
             <div.row no-update>
+                <div.autocomplete>
+                    <input#city list="cities" name="city" required title="This field shouldn't be empty"
+                        on-input("handleInput")
+                        on-keydown("handleKeyDown")
+                    />
+                </div>
                 <button on-click('getData')>Show</button>
             </div>
             <if (state.message !== '')>
-                <div#message><i.fal.fa-info></i> ${state.message}</div>
+                <div#message><i.fas.fa-info></i> ${state.message}</div>
             </if>
         </div>
     </div>
