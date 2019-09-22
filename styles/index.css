@@ -163,6 +163,38 @@ code {
   padding: 2px;
 }
 
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border-radius: 8px;
+  border: 2px #86A79E inset;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-active,
+.autocomplete-items div:hover {
+  background-color: #E3C38C !important;
+  color: #0A463A;
+}
+
 @media screen and (max-width: 460px) {
   #city {
     width: 160px;
