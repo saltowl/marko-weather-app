@@ -3,14 +3,14 @@ import cities from '../data/processed_city.list';
 import * as cnsts from '../data/constants';
 import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
 
-static function closeAllLists(el) {
+static function closeAllLists($el) {
     /*close all autocomplete lists in the document,
     except the one passed as an argument:*/
-    const inp = document.getElementById('city');
-    const items = document.getElementsByClassName("autocomplete-items");
-    for (let i = 0; i < items.length; i++) {
-        if (el != items[i] && el != inp) {
-          items[i].parentNode.removeChild(items[i]);
+    const $inp = document.getElementById('city');
+    const $items = document.getElementsByClassName('autocomplete-items');
+    for (let i = 0; i < $items.length; i++) {
+        if ($el != $items[i] && $el != $inp) {
+          $items[i].parentNode.removeChild($items[i]);
         }
     }
 }
@@ -30,35 +30,39 @@ class {
         this.removeActive = this.removeActive.bind(this);
     }
     onMount() {
-        document.addEventListener("click", function (e) {
+        document.addEventListener('click', function (e) {
             closeAllLists(e.target);
         });
     }
     fillState(data) {
-        this.state.main = data.weather[0].main;
-        this.state.pressure = (data.main.pressure * 0.75006375541921).toFixed(0) + ' mmHg';
-        this.state.temp = (data.main.temp < 0 ? "" : "+") + (data.main.temp).toFixed(1) + ' °C';
-        this.state.humidity = data.main.humidity + '%';
-        this.state.sunrise = this.processTimeString(data.sys.sunrise);
-        this.state.sunset = this.processTimeString(data.sys.sunset);
-        this.state.icon = data.weather[0].icon;
-        this.state.wind_deg = data.wind.deg + 'deg';
-        this.state.wind_speed = data.wind.speed + ' m/s';
-        this.state.description = data.weather[0].description[0].toUpperCase() + data.weather[0].description.substr(1);
-        this.state.status = cnsts.STATUS.DISPLAY;
+        this.state = {
+            main: data.weather[0].main,
+            pressure: `${(data.main.pressure * 0.75006375541921).toFixed(0)} mmHg`,
+            temp: `${(data.main.temp < 0 ? '' : '+')}${(data.main.temp).toFixed(1)} °C`,
+            humidity: `${data.main.humidity}%`,
+            sunrise: this.processTimeString(data.sys.sunrise),
+            sunset: this.processTimeString(data.sys.sunset),
+            icon: data.weather[0].icon,
+            wind_deg: `${data.wind.deg}deg`,
+            wind_speed: `${data.wind.speed} m/s`,
+            description: data.weather[0].description[0].toUpperCase() + data.weather[0].description.substr(1),
+            status: cnsts.STATUS.DISPLAY,
+            message: ''
+        }
     }
     processTimeString(date) {
         return new Date(date * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
     getData(e) {
         e.preventDefault();
+        
         const cityInfo = document.getElementById('city').value.replace(', ', ',');
         if (cityInfo !== '') {
             if (this.state.message !== '') {
                 this.resetMessage();
             }
             axios
-                .get('https://api.openweathermap.org/data/2.5/weather?q=' + cityInfo + '&units=metric&APPID=96c2fc4713551153e7966978b449861a')
+                .get(`https://api.openweathermap.org/data/2.5/weather?q=${cityInfo}&units=metric&APPID=96c2fc4713551153e7966978b449861a`)
                 .then(response => {
                     console.log(response.data);
                     this.fillState(response.data);
@@ -69,9 +73,8 @@ class {
                         this.showMessage("City isn't found");
                     }
                 });
-        } else {
-            this.showMessage("Enter the name of the city");
         }
+        this.showMessage('Enter the name of the city');
     }
     showMessage(message) {
         this.state.message = message;
@@ -80,8 +83,8 @@ class {
         this.state.message = '';
     }
     handleInput(e) {
-        const inp = document.getElementById('city');
-        const val = inp.value;
+        const $inp = document.getElementById('city');
+        const val = $inp.value;
 
         closeAllLists();
         if (!val) {
@@ -89,32 +92,32 @@ class {
         }
 
         this.currentFocus = -1;
-        /*create a DIV element that will contain the items (values):*/
-        let a = document.createElement("DIV");
-        a.setAttribute("id", "city_autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        /*append the DIV element as a child of the autocomplete container:*/
-        inp.parentNode.appendChild(a);
+
+        let $cityList = document.createElement('div');
+        $cityList.setAttribute('id', 'city_autocomplete-list');
+        $cityList.setAttribute('class', 'autocomplete-items');
+
+        $inp.parentNode.appendChild($cityList);
         const citiesCount = Math.min(cities.length, cnsts.MAX_DISPLAYED_CITIES);
         let fittedCount = 0;
         for (let i = 0; i < cities.length; i++) {
-            /*check if the item starts with the same letters as the text field value:*/
-            let countryStr = cities[i].name + ', ' + cities[i].country;
-            if (countryStr.substr(0, val.length) == val) {
-                /*create a DIV element for each matching element:*/
-                let b = document.createElement("DIV");
-                /*make the matching letters bold:*/
-                b.innerHTML = "<strong>" + countryStr.substr(0, val.length) + "</strong>";
-                b.innerHTML += countryStr.substr(val.length);
-                /*insert a input field that will hold the current array item's value:*/
-                b.innerHTML += "<input type='hidden' value='" + countryStr + "'>";
-                /*execute a function when someone clicks on the item value (DIV element):*/
-                b.addEventListener("click", function(e) {
-                    /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
+            let city = cities[i];
+            let cityStr = `${city.name}, ${city.country}`;
+
+            if (cityStr.substr(0, val.length) === val) {
+                let $city = document.createElement('div');
+
+                $city.innerHTML = `<strong>${cityStr.substr(0, val.length)}</strong>`;
+                $city.innerHTML += cityStr.substr(val.length);
+
+                $city.innerHTML += `<input type='hidden' value='${cityStr}'>`;
+
+                $city.addEventListener('click', function(e) {
+                    $inp.value = this.getElementsByTagName('input')[0].value;
                     closeAllLists();
                 });
-                a.appendChild(b);
+
+                $cityList.appendChild($city);
                 fittedCount++;
             }
             if (fittedCount > citiesCount) {
@@ -123,47 +126,46 @@ class {
         }
     }
     handleKeyDown(e) {
-        let el = document.getElementById("city_autocomplete-list");
-        if (el) {
-            el = el.getElementsByTagName("div");
+        let $el = document.getElementById('city_autocomplete-list');
+        if ($el) {
+            $el = $el.getElementsByTagName('div');
         }
         if (e.keyCode == 40) {
             /*If the arrow DOWN key is pressed,
             increase the currentFocus variable:*/
             this.currentFocus++;
-            this.addActive(el);
+            this.addActive($el);
         } else if (e.keyCode == 38) {
             /*If the arrow UP key is pressed,
             decrease the currentFocus variable:*/
             this.currentFocus--;
-            this.addActive(el);
+            this.addActive($el);
         } else if (e.keyCode == 13) {
             if (this.currentFocus > -1) {
-                /*and simulate a click on the "active" item:*/
-                if (el) {
-                    el[this.currentFocus].click();
+                if ($el) {
+                    $el[this.currentFocus].click();
                 }
             }
         }
     }
-    addActive(el) {
-        if (!el) {
+    addActive($el) {
+        if (!$el) {
             return false;
         }
 
-        this.removeActive(el);
-        if (this.currentFocus >= el.length) {
+        this.removeActive($el);
+        if (this.currentFocus >= $el.length) {
             this.currentFocus = 0;
         }
         if (this.currentFocus < 0) {
-            this.currentFocus = (el.length - 1);
+            this.currentFocus = ($el.length - 1);
         }
 
-        el[this.currentFocus].classList.add("autocomplete-active");
+        $el[this.currentFocus].classList.add('autocomplete-active');
     }
-    removeActive(el) {
-        for (var i = 0; i < el.length; i++) {
-          el[i].classList.remove("autocomplete-active");
+    removeActive($el) {
+        for (var i = 0; i < $el.length; i++) {
+          $el[i].classList.remove('autocomplete-active');
         }
      }
 }
@@ -172,7 +174,7 @@ class {
 <div>
     <div#control>
         <div.column>
-            <form.row no-update on-submit('getData')>
+            <form.row no-update on-submit("getData")>
                 <div.autocomplete>
                     <input#city list="cities" name="city" required title="This field shouldn't be empty"
                         on-input("handleInput")
@@ -180,7 +182,7 @@ class {
                         autocomplete="off"
                     />
                 </div>
-                <input#sbmt type="submit" value="Show" >
+                <input#sbmt type="submit" value="Show"/>
             </form>
             <if (state.message !== '')>
                 <div#message><i.fas.fa-info></i> ${state.message}</div>

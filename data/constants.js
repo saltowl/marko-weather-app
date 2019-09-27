@@ -12,7 +12,7 @@ export const INITIAL_STATE = {
     sunset: 0,
     icon: '',
     main: '',
-    wind_deg: "0deg",
+    wind_deg: '0deg',
     wind_speed: 0,
     description: '',
     message: ''
