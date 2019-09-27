@@ -132,7 +132,7 @@ i, #barometer {
   line-height: 40px;
 }
 
-button {
+#sbmt {
   background: transparent;
   color: black;
   border: 2px #86A79E outset;
@@ -147,12 +147,12 @@ button {
   outline: none !important;
 }
 
-button:hover {
+#sbmt:hover {
   background-color: rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
 
-button:active, code {
+#sbmt:active, code {
   border: 2px #86A79E inset;
 }
 
@@ -232,7 +232,7 @@ code {
     font-size: $font - 2;
   }
 
-  button {
+  #sbmt {
     font-size: $control-font;
   }
 }
@@ -275,7 +275,7 @@ code {
     font-size: $font - 2;
   }
 
-  button {
+  #smbt {
     font-size: $control-font;
   }
 }

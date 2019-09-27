@@ -50,7 +50,8 @@ class {
     processTimeString(date) {
         return new Date(date * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
-    getData() {
+    getData(e) {
+        e.preventDefault();
         const cityInfo = document.getElementById('city').value.replace(', ', ',');
         if (cityInfo !== '') {
             if (this.state.message !== '') {
@@ -137,8 +138,6 @@ class {
             this.currentFocus--;
             this.addActive(el);
         } else if (e.keyCode == 13) {
-            /*If the ENTER key is pressed, prevent the form from being submitted,*/
-            e.preventDefault();
             if (this.currentFocus > -1) {
                 /*and simulate a click on the "active" item:*/
                 if (el) {
@@ -173,15 +172,16 @@ class {
 <div>
     <div#control>
         <div.column>
-            <div.row no-update>
+            <form.row no-update on-submit('getData')>
                 <div.autocomplete>
                     <input#city list="cities" name="city" required title="This field shouldn't be empty"
                         on-input("handleInput")
                         on-keydown("handleKeyDown")
+                        autocomplete="off"
                     />
                 </div>
-                <button on-click('getData')>Show</button>
-            </div>
+                <input#sbmt type="submit" value="Show" >
+            </form>
             <if (state.message !== '')>
                 <div#message><i.fas.fa-info></i> ${state.message}</div>
             </if>
