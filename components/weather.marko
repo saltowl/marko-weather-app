@@ -21,6 +21,7 @@ class {
         this.currentFocus = -1;
 
         this.fillState = this.fillState.bind(this);
+        this.resetState = this.resetState.bind(this);
         this.showMessage = this.showMessage.bind(this);
         this.resetMessage = this.resetMessage.bind(this);
 
@@ -50,6 +51,9 @@ class {
             message: ''
         }
     }
+    resetState() {
+        this.state = cnsts.INITIAL_STATE;
+    }
     processTimeString(date) {
         return new Date(date * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
@@ -70,11 +74,14 @@ class {
                 .catch(error => {
                     console.log(error);
                     if (error.response.status === 404) {
+                        this.resetState();
                         this.showMessage("City isn't found");
                     }
                 });
+        } else {
+            this.showMessage('Enter the name of the city');
+            this.resetState();
         }
-        this.showMessage('Enter the name of the city');
     }
     showMessage(message) {
         this.state.message = message;
