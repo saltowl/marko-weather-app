@@ -38,3 +38,7 @@ If you want to change just some styles run:
 To compile the whole project run:
 
 `lasso --main index.js --inject-into index.html --config lasso.json`
+
+To run unit tests:
+
+`npm test`
