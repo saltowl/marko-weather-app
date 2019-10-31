@@ -1,0 +1,53 @@
+import "../../node_modules/@fortawesome/fontawesome-free/css/all.css";
+import * as cnsts from '../../data/constants';
+
+<div>
+    <div#control>
+        <div.column>
+            <form.row no-update on-submit("handleSubmit")>
+                <div.autocomplete>
+                    <input#city list="cities" name="city" required title="This field shouldn't be empty"
+                        on-input("handleInput")
+                        on-keydown("handleKeyDown")
+                        autocomplete="off"
+                    />
+                </div>
+                <input#sbmt type="submit" value="Show"/>
+            </form>
+            <if (state.message !== '')>
+                <div#message><i.fas.fa-info></i> ${state.message}</div>
+            </if>
+        </div>
+    </div>
+
+    <if (state.status === cnsts.STATUS.DISPLAY)>
+        <div#weather>
+            <div#main>${state.main}</div>
+            <div.row.space-between>
+                <div.row#temperature><i.fas.fa-thermometer-half></i>&nbsp;${state.temp}</div>
+                <img#main-img src="https://openweathermap.org/img/wn/"+state.icon+"@2x.png" title=state.description/>
+            </div>
+            <div#windBlock.row.space-between>
+                <div#wind-speed.row>
+                    <i.fas.fa-wind></i>&nbsp;
+                    <div>${state.wind_speed}</div>
+                </div>
+                $ const rot = ": rotate(" + state.wind_deg + ");";
+                <div#wind>
+                    <div#N>N</div>
+                    <div#W>W</div>
+                    <div#windDirection><div style="-webkit-transform"+rot+"-ms-transform"+rot+"-o-transform"+rot+"transform"+rot>↑</div></div>
+                    <div#E>E</div>
+                    <div#S>S</div>
+                </div>
+            </div>
+            <div#addit-info.row.space-between>
+                <div.row><img#barometer src="https://image.flaticon.com/icons/svg/106/106462.svg"/>&nbsp;${state.pressure}</div>
+                <div.row><i.fas.fa-tint></i>&nbsp;${state.humidity}</div>
+            </div>
+            <div.row#daylight-hours>
+                <div>Daylight hours: from <code>${state.sunrise}</code> to <code>${state.sunset}</code></div>
+            </div>
+        </div>
+    </if>
+</div>
