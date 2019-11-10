@@ -72,4 +72,19 @@ describe('Weather component', () => {
 
     });
     
+    describe('message', () => {
+
+        it('set message', () => {
+            const message = 'Smth';
+            weather.showMessage(message);
+            expect(weather.state.message).to.eql(message);
+        });
+
+        it('reset message', () => {
+            weather.resetMessage();
+            expect(weather.state.message).to.eql('');
+        });
+
+    });
+
 });
