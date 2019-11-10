@@ -1,5 +1,5 @@
 import "../../node_modules/@fortawesome/fontawesome-free/css/all.css";
-import * as cnsts from '../../data/constants';
+import { STATUS } from '../../data/constants';
 
 <div>
     <div#control>
@@ -20,7 +20,7 @@ import * as cnsts from '../../data/constants';
         </div>
     </div>
 
-    <if (state.status === cnsts.STATUS.DISPLAY)>
+    <if (state.status === STATUS.DISPLAY)>
         <div#weather>
             <div#main>${state.main}</div>
             <div.row.space-between>

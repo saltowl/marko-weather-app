@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cities from '../../data/processed_city.list';
-import * as cnsts from '../../data/constants';
+import * as constants from '../../data/constants';
 
 function closeAllLists($el) {
     /*close all autocomplete lists in the document,
@@ -16,7 +16,7 @@ function closeAllLists($el) {
 
 module.exports = class {
     onCreate() {
-        this.state = cnsts.INITIAL_STATE;
+        this.state = constants.INITIAL_STATE;
         this.currentFocus = -1;
 
         this.fillState = this.fillState.bind(this);
@@ -50,13 +50,13 @@ module.exports = class {
             wind_deg: `${data.wind.deg}deg`,
             wind_speed: `${data.wind.speed} m/s`,
             description: data.weather[0].description[0].toUpperCase() + data.weather[0].description.substr(1),
-            status: cnsts.STATUS.DISPLAY,
+            status: constants.STATUS.DISPLAY,
             message: ''
         }
     }
 
     resetState() {
-        this.state = cnsts.INITIAL_STATE;
+        this.state = constants.INITIAL_STATE;
     }
 
     processTimeString(date) {
@@ -82,11 +82,9 @@ module.exports = class {
         return axios
             .get(`https://api.openweathermap.org/data/2.5/weather?q=${cityInfo}&units=metric&APPID=96c2fc4713551153e7966978b449861a`)
             .then(response => {
-                // console.log(response.data);
                 this.fillState(response.data);
             })
             .catch(error => {
-                // console.log(error);
                 if (error.response && error.response.status === 404) {
                     this.resetState();
                     this.showMessage("City isn't found");
@@ -121,7 +119,7 @@ module.exports = class {
         $cityList.setAttribute('class', 'autocomplete-items');
 
         $inp.parentNode.appendChild($cityList);
-        const citiesCount = Math.min(cities.length, cnsts.MAX_DISPLAYED_CITIES);
+        const citiesCount = Math.min(cities.length, constants.MAX_DISPLAYED_CITIES);
         let fittedCount = 0;
         for (let i = 0; i < cities.length; i++) {
             let city = cities[i];
@@ -143,7 +141,7 @@ module.exports = class {
                 $cityList.appendChild($city);
                 fittedCount++;
             }
-            if (fittedCount > citiesCount) {
+            if (fittedCount >= citiesCount) {
                 break;
             }
         }
@@ -168,8 +166,10 @@ module.exports = class {
             if (this.currentFocus > -1) {
                 if ($el) {
                     $el[this.currentFocus].click();
+                    return 0;
                 }
             }
+            return 1;
         }
     }
 
@@ -183,7 +183,7 @@ module.exports = class {
             this.currentFocus = 0;
         }
         if (this.currentFocus < 0) {
-            this.currentFocus = ($el.length - 1);
+            this.currentFocus = $el.length - 1;
         }
 
         $el[this.currentFocus].classList.add('autocomplete-active');

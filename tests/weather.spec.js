@@ -1,8 +1,15 @@
-import { expect } from 'chai';
-import { INITIAL_STATE, STATUS } from '../data/constants'
+import chai, { expect } from 'chai';
+import chaiDom from 'chai-dom';
+import { JSDOM } from 'jsdom';
+import { INITIAL_STATE, STATUS, MAX_DISPLAYED_CITIES } from '../data/constants';
+import cities from '../data/processed_city.list';
 
 const Weather = require('../components/weather/component');
 const weather = new Weather();
+
+chai.use(chaiDom);
+const { document } = (new JSDOM(`<!DOCTYPE html>`)).window;
+global.document = document;
 
 describe('Weather component', () => {
     
@@ -71,7 +78,7 @@ describe('Weather component', () => {
         });
 
     });
-    
+
     describe('message', () => {
 
         it('set message', () => {
@@ -87,4 +94,174 @@ describe('Weather component', () => {
 
     });
 
+    const $listContainer = document.createElement('div');
+    $listContainer.setAttribute('id', 'city_autocomplete-list');
+    $listContainer.classList.add('autocomplete-items');
+    for (let i = 0; i < 3; i++) {
+        let $item = document.createElement('div');
+        $item.innerHTML = `<div>${i}<input type="hidden" value="${i}"></div>`
+        $listContainer.appendChild($item);
+    }
+    document.body.appendChild($listContainer);
+    const $list = $listContainer.getElementsByTagName('div');
+
+    describe('autocomplete list', () => {
+
+        describe('remove "autocomplete-active" from the item', () => {
+
+            it('remove class "autocomplete-active" from selected element of autocomplete list', () => {
+                let selectedNum = 1;
+                $list[selectedNum].classList.add('autocomplete-active');
+    
+                weather.removeActive($list);
+    
+                expect($list[selectedNum]).not.to.have.class('autocomplete-active');
+            });
+
+        });
+
+        describe('add "autocomplete-active" to the item', () => {
+
+            it('add class "autocomplete-active" to the selected element of autocomplete list', () => {
+                weather.currentFocus = 0;
+    
+                weather.addActive($list);
+    
+                expect($list[weather.currentFocus]).to.have.class('autocomplete-active');
+            });
+    
+            it('not add class "autocomplete-active", if there isn\'t autocomplete list', () => {
+                weather.currentFocus = 1;
+    
+                weather.addActive();
+    
+                expect($list[weather.currentFocus]).not.to.have.class('autocomplete-active');
+            });
+
+        });
+
+        describe('handle key down event in the input "city"', () => {
+
+            const e = {
+                keyCode: ''
+            };
+
+            it('if the arrow DOWN key is pressed, select next item in the list', () => {
+                e.keyCode = 40;
+                let focus = 0;
+                weather.currentFocus = focus;
+                
+                weather.handleKeyDown(e);
+                
+                expect(weather.currentFocus).to.eql(focus + 1);
+                let $item = document.getElementById('city_autocomplete-list').getElementsByTagName('div')[weather.currentFocus];
+                expect($item).to.have.class('autocomplete-active');
+            });
+    
+            it('if the arrow DOWN key is pressed and there are no more items, select the fist one', () => {
+                e.keyCode = 40;
+                let focus = $list.length;
+                weather.currentFocus = focus;
+                
+                weather.handleKeyDown(e);
+                
+                expect(weather.currentFocus).to.eql(0);
+                let $item = document.getElementById('city_autocomplete-list').getElementsByTagName('div')[weather.currentFocus];
+                expect($item).to.have.class('autocomplete-active');
+            });
+    
+            it('if the arrow UP key is pressed, select previous item in the list', () => {
+                e.keyCode = 38;
+                let focus = 1;
+                weather.currentFocus = focus;
+                
+                weather.handleKeyDown(e);
+                
+                expect(weather.currentFocus).to.eql(focus - 1);
+                let $item = document.getElementById('city_autocomplete-list').getElementsByTagName('div')[weather.currentFocus];
+                expect($item).to.have.class('autocomplete-active');
+            });
+    
+            it('if the arrow UP key is pressed and the current selected is the fist item in the list, select the last one', () => {
+                e.keyCode = 38;
+                let focus = 0;
+                weather.currentFocus = focus;
+                
+                weather.handleKeyDown(e);
+                
+                expect(weather.currentFocus).to.eql($list.length - 1);
+                let $item = document.getElementById('city_autocomplete-list').getElementsByTagName('div')[weather.currentFocus];
+                expect($item).to.have.class('autocomplete-active');
+            });
+
+            it('the ENTER key is pressed and there no selected item', () => {
+                e.keyCode = 13;
+                weather.currentFocus = -1;
+                
+                let result = weather.handleKeyDown(e);
+                
+                expect(result).to.be.eql(1);
+            });
+    
+            it('the ENTER key is pressed and there is selected item', () => {
+                e.keyCode = 13;
+                weather.currentFocus = 1;
+                
+                let result = weather.handleKeyDown(e);
+                
+                expect(result).to.be.eql(0);
+            });
+
+        });
+
+
+        describe('handle input event in the input "city"', () => {
+
+            const $inp = document.createElement('input');
+            $inp.setAttribute('id', 'city');
+            document.body.appendChild($inp);
+            
+            it('create autocomplete list with correct length', () => {
+                $inp.value = 'M';
+                let citiesCount = Math.min(cities.length, MAX_DISPLAYED_CITIES);
+
+                weather.handleInput();
+
+                let $citiesList = document.getElementById('city_autocomplete-list');
+                expect($citiesList).to.have.length(citiesCount);
+            });
+
+            it('left open just one autocomplete list', () => {
+                $inp.value = 'P';
+
+                weather.handleInput();
+
+                let $citiesLists = document.getElementsByClassName('autocomplete-items');
+                expect($citiesLists).to.have.length(1);
+            });
+
+            it('create autocomplete list with correct values', () => {
+                $inp.value = 'M';
+
+                weather.handleInput();
+
+                let cityListhtml = `<div><strong>M</strong>ar’ina Roshcha, RU<input type="hidden" value="Mar’ina Roshcha, RU"></div><div><strong>M</strong>erida, VE<input type="hidden" value="Merida, VE"></div><div><strong>M</strong>kuze, ZA<input type="hidden" value="Mkuze, ZA"></div><div><strong>M</strong>ao, DO<input type="hidden" value="Mao, DO"></div><div><strong>M</strong>atoba, JP<input type="hidden" value="Matoba, JP"></div><div><strong>M</strong>utaykutan, RU<input type="hidden" value="Mutaykutan, RU"></div><div><strong>M</strong>orden, CA<input type="hidden" value="Morden, CA"></div><div><strong>M</strong>asama, TZ<input type="hidden" value="Masama, TZ"></div><div><strong>M</strong>bongoté, CF<input type="hidden" value="Mbongoté, CF"></div><div><strong>M</strong>assa, SD<input type="hidden" value="Massa, SD"></div>`;
+                let $citiesList = document.getElementById('city_autocomplete-list');
+                expect($citiesList).to.contain.html(cityListhtml);
+            });
+
+            it('close autocomplete list when item picked', () => {
+                $inp.value = 'M';
+
+                weather.handleInput();
+                document.getElementById('city_autocomplete-list').firstElementChild.click();
+
+                let $citiesList = document.getElementById('city_autocomplete-list');
+                expect($citiesList).not.to.exist;
+            });
+
+        });
+
+    });
+    
 });
