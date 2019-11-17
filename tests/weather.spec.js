@@ -3,8 +3,9 @@ import chaiDom from 'chai-dom';
 import { JSDOM } from 'jsdom';
 import { INITIAL_STATE, STATUS, MAX_DISPLAYED_CITIES } from '../data/constants';
 import cities from '../data/processed_city.list';
+import axios from 'axios';
+import Weather from '../components/weather/component';
 
-const Weather = require('../components/weather/component');
 const weather = new Weather();
 
 chai.use(chaiDom);
@@ -18,23 +19,23 @@ describe('Weather component', () => {
         expect(weather.processTimeString(1572530028)).to.equal('4:53 PM');
     });
     
-    it('fill state with data', () => {
-        const data = {
-            base: "stations",
-            clouds: {all: 75},
-            cod: 200,
-            coord: {lon: 37.62, lat: 55.75},
-            dt: 1572515073,
-            id: 524901,
-            main: {temp: -2.4, pressure: 1021, humidity: 79, temp_min: -3, temp_max: -1.11},
-            name: "Moscow",
-            sys: {type: 1, id: 9027, country: "RU", sunrise: 1572496341, sunset: 1572530028},
-            timezone: 10800,
-            visibility: 10000,
-            weather: [{id: 620, main: "Snow", description: "light shower snow", icon: "13d"}],
-            wind: {speed: 6, deg: 290},
-        };
+    const data = {
+        base: "stations",
+        clouds: {all: 75},
+        cod: 200,
+        coord: {lon: 37.62, lat: 55.75},
+        dt: 1572515073,
+        id: 524901,
+        main: {temp: -2.4, pressure: 1021, humidity: 79, temp_min: -3, temp_max: -1.11},
+        name: "Moscow",
+        sys: {type: 1, id: 9027, country: "RU", sunrise: 1572496341, sunset: 1572530028},
+        timezone: 10800,
+        visibility: 10000,
+        weather: [{id: 620, main: "Snow", description: "light shower snow", icon: "13d"}],
+        wind: {speed: 6, deg: 290},
+    };
 
+    it('fill state with data', () => {
         const resultState = {
             status: STATUS.DISPLAY,
             pressure: '766 mmHg',
@@ -61,16 +62,20 @@ describe('Weather component', () => {
 
     describe('data request', () => {
 
-        it('fill state when request an existent city', (done) => {
+        it('fill state when request an existent city', function(done) {
             const city = 'Moscow,RU';
+            this.sandbox.stub(axios, 'get').returns(new Promise((r) => r({ data })));
+
             weather.getData(city).then(() => {
                 expect(weather.state.status).to.eql(STATUS.DISPLAY);
                 expect(weather.state.message).to.eql('');
             }).then(done, done);
         });
     
-        it('fill message when request a non-existent city', (done) => {
+        it('fill message when request a non-existent city', function(done) {
             const city = '789';
+            this.sandbox.stub(axios, 'get').returns(new Promise((_, r) => r({})));
+
             weather.getData(city).catch(() => {
                 expect(weather.state.status).to.eql(STATUS.INIT);
                 expect(weather.state.message).to.eql("City isn't found");
