@@ -22,7 +22,7 @@
     "lasso-babel-transform": "^3.0.0",
     "lasso-marko": "^2.4.7",
     "lasso-sass": "^3.0.0",
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "sass": "^1.22.12",
     "sinon": "^7.5.0"
   }
